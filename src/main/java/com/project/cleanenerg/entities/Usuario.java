@@ -2,64 +2,59 @@ package com.project.cleanenerg.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
+
+import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Entity
+@Data
 @Table(name = "usuario")
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @NotNull
     private String nome;
-
     @NotNull
     @Column(unique = true)
     private String username;
-
     @NotNull
     private String password;
     @Email
     @NotNull
     @Column(unique = true)
     private String email;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false, length = 25)
+    private ROLE role = ROLE.ROLE_CLIENTE;
+    @CreatedDate
+    @Column(name = "dataCriacao")
+    private LocalDateTime dataCriacao;
+    @LastModifiedDate
+    @Column(name = "dataModificacao")
+    private LocalDateTime dataModificacao;
+    @CreatedBy
+    @Column(name = "criadoPor")
+    private String criadoPor;
+    @LastModifiedBy
+    @Column(name = "modificadoPor")
+    private String modificadoPor;
 
-    public Long getId() {
-        return id;
+    public enum ROLE{
+        ROLE_CLIENTE,
+        ROLE_ADMIN
     }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Usuario usuario = (Usuario) o;
+        return Objects.equals(id, usuario.id);
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }

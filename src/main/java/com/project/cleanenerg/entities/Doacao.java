@@ -1,9 +1,15 @@
 package com.project.cleanenerg.entities;
 import jakarta.persistence.*;
+import lombok.Data;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
 @Entity
+@Data
 @Table(name = "doacao")
 public class Doacao {
     @Id
@@ -19,46 +25,19 @@ public class Doacao {
     @ManyToOne
     @JoinColumn(name = "projeto_id")
     private Projeto projeto;
+    @CreatedDate
+    @Column(name = "dataCriacao")
+    private LocalDateTime dataCriacao;
+    @LastModifiedDate
+    @Column(name = "dataModificacao")
+    private LocalDateTime dataModificacao;
+    @CreatedBy
+    @Column(name = "criadoPor")
+    private String criadoPor;
+    @LastModifiedBy
+    @Column(name = "modificadoPor")
+    private String modificadoPor;
 
     private LocalDateTime dataDoacao = LocalDateTime.now();
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Double getValor() {
-        return valor;
-    }
-
-    public void setValor(Double valor) {
-        this.valor = valor;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    public Projeto getProjeto() {
-        return projeto;
-    }
-
-    public void setProjeto(Projeto projeto) {
-        this.projeto = projeto;
-    }
-
-    public LocalDateTime getDataDoacao() {
-        return dataDoacao;
-    }
-
-    public void setDataDoacao(LocalDateTime dataDoacao) {
-        this.dataDoacao = dataDoacao;
-    }
 }

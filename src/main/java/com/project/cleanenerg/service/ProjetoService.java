@@ -1,6 +1,6 @@
 package com.project.cleanenerg.service;
 
-import com.project.cleanenerg.web.Exception.ProjetoNotFoundException;
+import com.project.cleanenerg.exception.ProjetoNotFoundException;
 import com.project.cleanenerg.entities.Projeto;
 import com.project.cleanenerg.repository.DoacaoRepository;
 import com.project.cleanenerg.repository.ProjetoRepository;

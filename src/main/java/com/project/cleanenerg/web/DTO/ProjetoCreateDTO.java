@@ -1,34 +1,26 @@
 package com.project.cleanenerg.web.DTO;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.*;
+
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
 public class ProjetoCreateDTO {
+
+    @NotBlank(message = "O nome do projeto não pode ser vazio.")
     private String nome;
+    @NotBlank(message = "A descrição não pode ser vazia.")
     private String descricao;
+    @NotNull(message = "O valor da meta não pode ser nulo.")
+    @Positive(message = "O valor da meta deve ser positivo.")
     private Double valorMeta;
+    @NotNull
+    @Positive(message = "O valor da meta deve ser positivo.")
     private Double valorArrecadado;
 
-    public ProjetoCreateDTO() {
-    }
-
-    public ProjetoCreateDTO(String nome, String descricao, Double valorMeta, Double valorArrecadado) {
-        this.nome = nome;
-        this.descricao = descricao;
-        this.valorMeta = valorMeta;
-        this.valorArrecadado = valorArrecadado;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public Double getValorMeta() {
-        return valorMeta;
-    }
-
-    public Double getValorArrecadado() {
-        return valorArrecadado;
-    }
 }
