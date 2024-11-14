@@ -31,7 +31,6 @@ public class UsuarioService {
 
     }
 
-    //TODO: Verificar bloqueio de usuario
     @Transactional(readOnly = true)
     public Usuario buscarId(Long id) {
         return usuarioRepository.findById(id).orElseThrow(
