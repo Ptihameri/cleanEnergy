@@ -7,12 +7,14 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class ProjetoDTO {
+public class ProjetoResponseDTO {
     private Long id;
     private String nome;
     private String descricao;
     private Double valorMeta;
     private Double valorArrecadado;
+    private String imagem;
+
 
 
 }

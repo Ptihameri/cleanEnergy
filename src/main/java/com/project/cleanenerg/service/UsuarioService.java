@@ -5,28 +5,33 @@ import com.project.cleanenerg.exception.NaoEmcontradoException;
 import com.project.cleanenerg.exception.PasswordInvalidException;
 import com.project.cleanenerg.exception.UsernameEmailException;
 import com.project.cleanenerg.repository.UsuarioRepository;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-@RequiredArgsConstructor
 @Service
 public class UsuarioService {
+    @Autowired
+    private  UsuarioRepository usuarioRepository;
+    @Autowired
+    private  PasswordEncoder passwordEncoder;
 
-    private final UsuarioRepository usuarioRepository;
-    private final PasswordEncoder passwordEncoder;
+
 
 
     @Transactional
     public Usuario salvar(Usuario usuario) {
+        if (usuario.getPassword() == null || usuario.getPassword().isEmpty()) {
+            throw new IllegalArgumentException("A senha não pode ser nula ou vazia");
+        }
         try {
             usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
             return usuarioRepository.save(usuario);
         } catch (org.springframework.dao.DataIntegrityViolationException ex) {
-            throw new UsernameEmailException(String.format("Email %s já cadastrado", usuario.getUsername()));
+            throw new UsernameEmailException("Usuario ou email já cadastrado");
         }
 
     }
@@ -65,6 +70,7 @@ public class UsuarioService {
                 () -> new NaoEmcontradoException(String.format("Usuario '%s' não encontrado", username))
         );
     }
+
     @Transactional(readOnly = true)
     public Usuario.ROLE buscarRolePeloUsuario(String username) {
         return usuarioRepository.findRoleByUsername(username);

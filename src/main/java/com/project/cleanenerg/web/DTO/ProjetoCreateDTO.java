@@ -22,5 +22,6 @@ public class ProjetoCreateDTO {
     @NotNull
     @Positive(message = "O valor da meta deve ser positivo.")
     private Double valorArrecadado;
+    private String imagem;
 
 }

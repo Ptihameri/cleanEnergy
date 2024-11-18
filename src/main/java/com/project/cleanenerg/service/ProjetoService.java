@@ -4,42 +4,42 @@ import com.project.cleanenerg.exception.ProjetoNotFoundException;
 import com.project.cleanenerg.entities.Projeto;
 import com.project.cleanenerg.repository.DoacaoRepository;
 import com.project.cleanenerg.repository.ProjetoRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
+@RequiredArgsConstructor
 @Service
 public class ProjetoService {
 
     private final ProjetoRepository projetoRepository;
-    private final DoacaoRepository doacaoRepository;
 
-    // Construtor com injeção de dependência
-    public ProjetoService(ProjetoRepository projetoRepository, DoacaoRepository doacaoRepository) {
-        this.projetoRepository = projetoRepository;
-        this.doacaoRepository = doacaoRepository;
-    }
 
+
+    @Transactional
     public Projeto salvarProjeto(Projeto projeto) {
         return projetoRepository.save(projeto);
     }
 
+    @Transactional
     public Projeto atualizarValorArrecadado(Long projetoId, Double valorDoacao) throws ProjetoNotFoundException {
         Projeto projeto = projetoRepository.findById(projetoId)
                 .orElseThrow(() -> new ProjetoNotFoundException());
         projeto.setValorArrecadado(projeto.getValorArrecadado() + valorDoacao);
         return projetoRepository.save(projeto);
     }
-
+    @Transactional(readOnly = true)
     public Projeto obterProjeto(Long id) throws ProjetoNotFoundException {
         return projetoRepository.findById(id)
                 .orElseThrow(() -> new ProjetoNotFoundException());
     }
-
+    @Transactional(readOnly = true)
     public List<Projeto> listarProjetos() {
         return projetoRepository.findAll();
     }
 
+    @Transactional
     public Projeto atualizarProjeto(Long id, Projeto projetoAtualizado) throws ProjetoNotFoundException {
         return projetoRepository.findById(id)
                 .map(projeto -> {
@@ -52,6 +52,8 @@ public class ProjetoService {
                 .orElseThrow(() -> new ProjetoNotFoundException());
     }
 
+
+    @Transactional
     public void deletarProjeto(Long id) throws ProjetoNotFoundException {
         Projeto projeto = projetoRepository.findById(id)
                 .orElseThrow(() -> new ProjetoNotFoundException());

@@ -5,10 +5,11 @@ import com.project.cleanenerg.web.DTO.UsuarioCreateDTO;
 import com.project.cleanenerg.web.DTO.UsuarioResponseDTO;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.PropertyMap;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
+@Component
 public class UsuarioMapper {
 
     public static Usuario toUsuario(UsuarioCreateDTO dto) {

@@ -1,7 +1,8 @@
-package com.project.cleanenerg.web.conttroller;
+package com.project.cleanenerg.web.controller;
 
 
 import com.project.cleanenerg.entities.Usuario;
+import com.project.cleanenerg.exception.NaoEmcontradoException;
 import com.project.cleanenerg.service.UsuarioService;
 import com.project.cleanenerg.web.DTO.Mapper.UsuarioMapper;
 import com.project.cleanenerg.web.DTO.UsuarioCreateDTO;
@@ -27,7 +28,12 @@ public class UsuarioController {
 
     @PostMapping
     public ResponseEntity<UsuarioResponseDTO> create(@Valid @RequestBody UsuarioCreateDTO createDTO) {
-        Usuario user = usuarioService.salvar(UsuarioMapper.toUsuario(createDTO));
+        Usuario user = null;
+        try {
+            user = usuarioService.salvar(UsuarioMapper.toUsuario(createDTO));
+       }catch (Exception e){
+           throw new NaoEmcontradoException(e.getLocalizedMessage());
+       }
         return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioMapper.toDto(user));
     }
 
@@ -48,7 +54,7 @@ public class UsuarioController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<UsuarioResponseDTO>> getAll() {
         List<Usuario> users = usuarioService.buscarTodos();
         return ResponseEntity.ok(UsuarioMapper.toListDto(users));
