@@ -15,6 +15,5 @@ public class JwtAutenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
        log.info("401 - não autorizado {}", authException.getMessage());
        response.setHeader("www-authenticate", "Bearer realm='/api/v1/auth'");
-       response.sendError(401);
-    }
+        response.sendError(401, "Acesso não autorizado. Por favor, faça login.");    }
 }

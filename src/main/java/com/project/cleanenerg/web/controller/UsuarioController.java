@@ -31,12 +31,11 @@ public class UsuarioController {
         Usuario user = null;
         try {
             user = usuarioService.salvar(UsuarioMapper.toUsuario(createDTO));
-       }catch (Exception e){
-           throw new NaoEmcontradoException(e.getLocalizedMessage());
-       }
+        } catch (Exception e) {
+            throw new NaoEmcontradoException(e.getLocalizedMessage());
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(UsuarioMapper.toDto(user));
     }
-
 
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN') OR (hasRole('CLIENTE') AND #id == authentication.principal.id)")
@@ -44,7 +43,6 @@ public class UsuarioController {
         Usuario user = usuarioService.buscarId(id);
         return ResponseEntity.ok(UsuarioMapper.toDto(user));
     }
-
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN','CLIENTE') AND (#id == authentication.principal.id)")

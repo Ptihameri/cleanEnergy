@@ -4,12 +4,14 @@ import com.project.cleanenerg.entities.Doacao;
 import com.project.cleanenerg.service.DoacaoService;
 import com.project.cleanenerg.web.DTO.DoacaoCreateDTO;
 import com.project.cleanenerg.web.DTO.DoacaoResponseDTO;
+import com.project.cleanenerg.web.DTO.DoacaoUsuarioResponseDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static com.project.cleanenerg.web.DTO.Mapper.DoacaoMapper.toListDto;
 import static com.project.cleanenerg.web.DTO.Mapper.DoacaoMapper.toResponseDto;
 
 @RestController
@@ -32,9 +34,9 @@ public class DoacaoController {
 
     // Endpoint para listar todas as doações
     @GetMapping
-    public ResponseEntity<List<Doacao>> listarTodasDoacoes() {
+    public ResponseEntity<List<DoacaoUsuarioResponseDTO>> listarTodasDoacoes() {
         List<Doacao> doacoes = doacaoService.listarDoacoes();
-        return ResponseEntity.ok(doacoes);
+        return ResponseEntity.ok(toListDto(doacoes));
     }
 
     // Endpoint para listar doações de um projeto específico
@@ -50,6 +52,7 @@ public class DoacaoController {
         Doacao doacao = doacaoService.obterDoacaoPorId(id);
         return ResponseEntity.ok(doacao);
     }
+
     // Endpoint para listar doações de um usuário específico
     @GetMapping("/usuario/{userId}")
     public ResponseEntity<List<Doacao>> listarDoacaoPorUsuario(@PathVariable Long userId) {
@@ -77,7 +80,6 @@ public class DoacaoController {
 //            Doacao novaDoacao = doacaoRepository.save(doacao);
 //            return new ResponseEntity<>(novaDoacao, HttpStatus.CREATED);
 //        }
-
 
 
 }

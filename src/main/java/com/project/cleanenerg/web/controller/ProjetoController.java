@@ -35,6 +35,7 @@ public class ProjetoController {
         // Converte a entidade salva para o DTO de resposta e retorna
         return ResponseEntity.status(HttpStatus.CREATED).body(projetoSalvo);
     }
+
     @PutMapping("/{id}")
     public ResponseEntity<ProjetoResponseDTO> atualizarProjeto(@PathVariable Long id, @RequestBody Projeto projetoAtualizado) throws ProjetoNotFoundException {
         Projeto projeto = projetoService.atualizarProjeto(id, projetoAtualizado);
@@ -54,6 +55,7 @@ public class ProjetoController {
         return ResponseEntity.ok(toDTO(projeto));
 
     }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarProjeto(@PathVariable Long id) throws ProjetoNotFoundException {
         projetoService.deletarProjeto(id);

@@ -1,6 +1,5 @@
 package com.project.cleanenerg.web.controller;
 
-import com.project.cleanenerg.Jwt.JwtDetalhesDoUsuario;
 import com.project.cleanenerg.Jwt.JwtToken;
 import com.project.cleanenerg.service.UsuarioDetailsService;
 import com.project.cleanenerg.web.DTO.UsuarioLoginDTO;
@@ -8,7 +7,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,6 +22,7 @@ public class AuthController {
 
     private final UsuarioDetailsService datailsService;
     private final AuthenticationManager autenticationManager;
+
     @PostMapping("/auth")
     public ResponseEntity<?> autenticar(@RequestBody @Valid UsuarioLoginDTO dto, HttpServletRequest request) {
         log.info("Autenticando usuario: {}", dto.getUsername());
