@@ -2,6 +2,8 @@ package com.project.cleanenerg.web.controller;
 
 import com.project.cleanenerg.Jwt.JwtToken;
 import com.project.cleanenerg.service.UsuarioDetailsService;
+import com.project.cleanenerg.service.UsuarioService;
+import com.project.cleanenerg.web.DTO.AuthReponse;
 import com.project.cleanenerg.web.DTO.UsuarioLoginDTO;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -22,6 +24,7 @@ public class AuthController {
 
     private final UsuarioDetailsService datailsService;
     private final AuthenticationManager autenticationManager;
+    private final UsuarioService usuarioService;
 
     @PostMapping("/auth")
     public ResponseEntity<?> autenticar(@RequestBody @Valid UsuarioLoginDTO dto, HttpServletRequest request) {
@@ -33,8 +36,9 @@ public class AuthController {
             autenticationManager.authenticate(authenticationToken);
 
             JwtToken token = datailsService.getJwtTokenAcesso(dto.getUsername());
-
-            return ResponseEntity.ok(token);
+            long id = usuarioService.buscarPorUsername(dto.getUsername()).getId();
+            AuthReponse authReponse = new AuthReponse(id,token);
+            return ResponseEntity.ok(authReponse);
 
         } catch (AuthenticationException ex) {
             log.error("Erro de autenticação par o usuario: {}", ex.getMessage());
@@ -43,5 +47,6 @@ public class AuthController {
                 .badRequest()
                 .body("Credenciais invalidas a001");
     }
+
 
 }

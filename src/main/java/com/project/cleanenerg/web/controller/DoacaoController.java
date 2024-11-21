@@ -55,9 +55,9 @@ public class DoacaoController {
 
     // Endpoint para listar doações de um usuário específico
     @GetMapping("/usuario/{userId}")
-    public ResponseEntity<List<Doacao>> listarDoacaoPorUsuario(@PathVariable Long userId) {
+    public ResponseEntity<List<DoacaoUsuarioResponseDTO>> listarDoacaoPorUsuario(@PathVariable Long userId) {
         List<Doacao> doacoes = doacaoService.listarDoacaoPorUsuario(userId);
-        return ResponseEntity.ok(doacoes);
+        return ResponseEntity.ok(toListDto(doacoes));
     }
 
     // Endpoint para deletar uma doação

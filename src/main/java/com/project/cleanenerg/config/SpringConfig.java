@@ -16,11 +16,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
 @Configuration
+@EnableWebMvc
 @EnableWebSecurity
-public class SpringConfig {
+public class SpringConfig implements WebMvcConfigurer {
 
     @Bean
     public JwtRequestFilter jwtRequestFilter() {
@@ -45,7 +49,8 @@ public class SpringConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST, "api/usuarios").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth").permitAll()
-                        .requestMatchers("http://127.0.0.1:3000/Index.html").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/projetos").permitAll()
+                        .requestMatchers("http://127.0.0.1:3000/").permitAll()
                         .anyRequest().authenticated()
                 ).sessionManagement(
                         session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -54,5 +59,12 @@ public class SpringConfig {
                 ).exceptionHandling(ex -> ex
                         .authenticationEntryPoint(new JwtAutenticationEntryPoint())
                 ).build();
+    }
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedHeaders("*")
+                .allowedMethods("*");
     }
 }

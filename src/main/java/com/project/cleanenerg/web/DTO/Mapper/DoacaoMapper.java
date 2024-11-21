@@ -5,6 +5,7 @@ import com.project.cleanenerg.entities.Projeto;
 import com.project.cleanenerg.entities.Usuario;
 import com.project.cleanenerg.repository.ProjetoRepository;
 import com.project.cleanenerg.repository.UsuarioRepository;
+import com.project.cleanenerg.service.UsuarioService;
 import com.project.cleanenerg.web.DTO.DoacaoCreateDTO;
 import com.project.cleanenerg.web.DTO.DoacaoResponseDTO;
 import com.project.cleanenerg.web.DTO.DoacaoUsuarioResponseDTO;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 
 public class DoacaoMapper {
     @Autowired
-    private UsuarioRepository usuarioRepository;
+    private UsuarioService usuarioService;
 
     @Autowired
     private ProjetoRepository projetoRepository;
@@ -34,11 +35,12 @@ public class DoacaoMapper {
 
     public static DoacaoUsuarioResponseDTO toRespondeUsuarioDto(Doacao doacao) {
         DoacaoUsuarioResponseDTO doacaoResponse = new ModelMapper().map(doacao, DoacaoUsuarioResponseDTO.class);
+        doacaoResponse.setUsername(doacao.getUsuario().getUsername());
         return doacaoResponse;
     }
 
-    public static List<DoacaoUsuarioResponseDTO> toListDto(List<Doacao> projetos) {
-        return projetos.stream().map(projeto -> toRespondeUsuarioDto(projeto)).collect(Collectors.toList());
+    public static List<DoacaoUsuarioResponseDTO> toListDto(List<Doacao> doacaos) {
+        return doacaos.stream().map(doacao -> toRespondeUsuarioDto(doacao)).collect(Collectors.toList());
     }
 
     // Map Doacao Entity to Response DTO

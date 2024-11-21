@@ -2,8 +2,6 @@ package com.project.cleanenerg.web.DTO;
 
 import lombok.*;
 
-import java.time.LocalDate;
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -13,11 +11,9 @@ public class DoacaoUsuarioResponseDTO {
 
     private Double valor;
 
-    private Long usuarioId;
+    private String username;
 
     private Long projetoId;
-
-    private LocalDate dataDoacao;
 
     private Long idDoacao;
 }
