@@ -1,23 +1,21 @@
 package com.project.cleanenerg.service;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
 import com.project.cleanenerg.entities.Doacao;
 import com.project.cleanenerg.entities.Projeto;
 import com.project.cleanenerg.entities.Usuario;
 import com.project.cleanenerg.exception.NaoEmcontradoException;
 import com.project.cleanenerg.exception.ProjetoNotFoundException;
+import com.project.cleanenerg.producer.DoacaoProducer;
 import com.project.cleanenerg.repository.DoacaoRepository;
 import com.project.cleanenerg.repository.ProjetoRepository;
 import com.project.cleanenerg.repository.UsuarioRepository;
 import com.project.cleanenerg.web.DTO.DoacaoCreateDTO;
 import com.project.cleanenerg.web.DTO.Mapper.DoacaoMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-
 
 @RequiredArgsConstructor
 @Service
@@ -27,11 +25,10 @@ public class DoacaoService {
     private final UsuarioRepository usuarioRepository;
     private final ProjetoRepository projetoRepository;
     private final ProjetoService projetoService;
-
+    private final DoacaoProducer doacaoProducer;
 
     @Transactional
     public Doacao salvarDoacao(DoacaoCreateDTO doacao) {
-        System.out.println(doacao.getProjeto());
 
         // Verifica se o projeto existe
         Projeto projeto = projetoRepository.findById(doacao.getProjeto())
@@ -39,6 +36,8 @@ public class DoacaoService {
 
         Usuario usuario = usuarioRepository.findById(doacao.getUsuario())
                 .orElseThrow(() -> new NaoEmcontradoException("nao achei"));
+
+        this.doacaoProducer.processamentoDoacao(doacao);
 
         // Atualiza o valor arrecadado do projeto
         projeto.setValorArrecadado(projeto.getValorArrecadado() + doacao.getValor());
@@ -49,7 +48,7 @@ public class DoacaoService {
 
         DoacaoMapper doacaoMapper = new DoacaoMapper();
         // Salva a doação
-        Doacao save = doacaoRepository.save(doacaoMapper.toDoacao(doacao,projeto,usuario));
+        Doacao save = doacaoRepository.save(doacaoMapper.toDoacao(doacao, projeto, usuario));
         return save;
     }
 
@@ -77,7 +76,6 @@ public class DoacaoService {
                 .orElseThrow( () -> new NaoEmcontradoException("Doação nao encontrada para o usuario indormado"));
         return doacaoRepository.findByUsuario(usuario);
     }
-
 
     @Transactional
     public void deletarDoacao(Long id) {

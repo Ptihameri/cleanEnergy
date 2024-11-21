@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -18,47 +17,44 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 @RestControllerAdvice
 public class ApiExceptionHandler {
-    @ExceptionHandler({UsernameEmailException.class, ProjetoNotFoundException.class})
-    public ResponseEntity<String> handleProjetoNotFoundException(ProjetoNotFoundException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+
+        private ResponseEntity<ErrorResponse> buildErrorResponse(Exception ex, HttpServletRequest request, HttpStatus status) {
+            log.error("Api erro:", ex);
+            ErrorResponse errorResponse = new ErrorResponse(status.value(), ex.getMessage(), request.getRequestURI());
+            return ResponseEntity.status(status)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(errorResponse);
+        }
+
+        @ExceptionHandler(MethodArgumentNotValidException.class)
+        public ResponseEntity<ErrorResponse> methodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request) {
+            return buildErrorResponse(ex, request, HttpStatus.UNPROCESSABLE_ENTITY);
+        }
+
+        @ExceptionHandler(Exception.class)
+        public ResponseEntity<ErrorResponse> outroErroException(Exception ex, HttpServletRequest request) {
+            return buildErrorResponse(ex, request, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        @ExceptionHandler(AccessDeniedException.class)
+        public ResponseEntity<ErrorResponse> accessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
+            return buildErrorResponse(ex, request, HttpStatus.FORBIDDEN);
+        }
+
+        @ExceptionHandler(PasswordInvalidException.class)
+        public ResponseEntity<ErrorResponse> passwordInvalidException(PasswordInvalidException ex, HttpServletRequest request) {
+            return buildErrorResponse(ex, request, HttpStatus.BAD_REQUEST);
+        }
+
+        @ExceptionHandler(NaoEmcontradoException.class)
+        public ResponseEntity<ErrorResponse> naoEmcontradoException(NaoEmcontradoException ex, HttpServletRequest request) {
+            return buildErrorResponse(ex, request, HttpStatus.NOT_FOUND);
+        }
+
+        @ExceptionHandler({UsernameEmailException.class, ProjetoNotFoundException.class})
+        public ResponseEntity<ErrorResponse> handleProjetoNotFoundException(Exception ex, HttpServletRequest request) {
+            return buildErrorResponse(ex, request, HttpStatus.NOT_FOUND);
+
     }
 
-    @ExceptionHandler(NaoEmcontradoException.class)
-    public ResponseEntity<String> naoEmcontradoException(RuntimeException ex, HttpServletRequest request) {
-        log.error("Api erro:", ex);
-        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(ex.getMessage());
-    }
-
-    @ExceptionHandler(PasswordInvalidException.class)
-    public ResponseEntity<String> passwordInvalidException(RuntimeException ex, HttpServletRequest request) {
-        log.error("Api erro:", ex);
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(ex.getMessage());
-    }
-
-    @ExceptionHandler(AccessDeniedException.class)
-    public ResponseEntity<String> accessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
-        log.error("Api erro:", ex);
-        return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(ex.getMessage());
-    }
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> outroErroException(Exception ex, HttpServletRequest request) {
-        log.error("Api erro interno: {} {}", ex.getMessage());
-        return ResponseEntity
-                .status(HttpStatus.INTERNAL_SERVER_ERROR).
-                contentType(MediaType.APPLICATION_JSON)
-                .body(ex.getMessage());
-    }
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<String> methodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request, BindingResult result) {
-        log.error("Api erro:", ex);
-        return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).
-                contentType(MediaType.APPLICATION_JSON)
-                .body(result.toString());
-    }
 }
