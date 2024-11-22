@@ -1,23 +1,20 @@
 package com.project.cleanenerg.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import com.project.cleanenerg.entities.Doacao;
 import com.project.cleanenerg.entities.Projeto;
 import com.project.cleanenerg.entities.Usuario;
 import com.project.cleanenerg.exception.NaoEmcontradoException;
 import com.project.cleanenerg.exception.ProjetoNotFoundException;
-import com.project.cleanenerg.producer.DoacaoProducer;
 import com.project.cleanenerg.repository.DoacaoRepository;
 import com.project.cleanenerg.repository.ProjetoRepository;
 import com.project.cleanenerg.repository.UsuarioRepository;
 import com.project.cleanenerg.web.DTO.DoacaoCreateDTO;
 import com.project.cleanenerg.web.DTO.Mapper.DoacaoMapper;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
-@RequiredArgsConstructor
 @Service
 public class DoacaoService {
 
@@ -25,56 +22,55 @@ public class DoacaoService {
     private final UsuarioRepository usuarioRepository;
     private final ProjetoRepository projetoRepository;
     private final ProjetoService projetoService;
-    private final DoacaoProducer doacaoProducer;
+
+    public DoacaoService(DoacaoRepository doacaoRepository, UsuarioRepository usuarioRepository,
+                         ProjetoRepository projetoRepository, ProjetoService projetoService) {
+        this.doacaoRepository = doacaoRepository;
+        this.usuarioRepository = usuarioRepository;
+        this.projetoRepository = projetoRepository;
+        this.projetoService = projetoService;
+    }
 
     @Transactional
     public Doacao salvarDoacao(DoacaoCreateDTO doacao) {
-
-        // Verifica se o projeto existe
         Projeto projeto = projetoRepository.findById(doacao.getProjeto())
-                .orElseThrow(() -> new NaoEmcontradoException("nao achei"));
+                .orElseThrow(() -> new NaoEmcontradoException("Projeto não encontrado"));
 
         Usuario usuario = usuarioRepository.findById(doacao.getUsuario())
-                .orElseThrow(() -> new NaoEmcontradoException("nao achei"));
-
-        this.doacaoProducer.processamentoDoacao(doacao);
+                .orElseThrow(() -> new NaoEmcontradoException("Usuário não encontrado"));
 
         // Atualiza o valor arrecadado do projeto
         projeto.setValorArrecadado(projeto.getValorArrecadado() + doacao.getValor());
-
         projetoService.atualizarProjeto(doacao.getProjeto(), projeto);
 
-        // Transforma retorno em doacao
-
-        DoacaoMapper doacaoMapper = new DoacaoMapper();
         // Salva a doação
-        Doacao save = doacaoRepository.save(doacaoMapper.toDoacao(doacao, projeto, usuario));
-        return save;
+        DoacaoMapper doacaoMapper = new DoacaoMapper();
+        return doacaoRepository.save(doacaoMapper.toDoacao(doacao, projeto, usuario));
     }
 
     @Transactional(readOnly = true)
-    public List<Doacao> listarDoacoes() {
-        return doacaoRepository.findAll();
+    public Page<Doacao> listarDoacoesPaginadas(Pageable pageable) {
+        return doacaoRepository.findAll(pageable);
     }
 
     @Transactional(readOnly = true)
-    public List<Doacao> listarDoacoesPorProjeto(Long projetoId) {
+    public Page<Doacao> listarDoacoesPorProjeto(Long projetoId, Pageable pageable) {
         Projeto projeto = projetoRepository.findById(projetoId)
                 .orElseThrow(() -> new ProjetoNotFoundException());
-        return doacaoRepository.findByProjeto(projeto);
+        return doacaoRepository.findByProjeto(projeto, pageable);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Doacao> listarDoacoesPorUsuario(Long usuarioId, Pageable pageable) {
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new NaoEmcontradoException("Usuário não encontrado"));
+        return doacaoRepository.findByUsuario(usuario, pageable);
     }
 
     @Transactional(readOnly = true)
     public Doacao obterDoacaoPorId(Long id) {
         return doacaoRepository.findById(id)
                 .orElseThrow(() -> new NaoEmcontradoException("Doação não encontrada"));
-    }
-
-    @Transactional(readOnly = true)
-    public List<Doacao> listarDoacaoPorUsuario(Long userId){
-        Usuario usuario = usuarioRepository.findById(userId)
-                .orElseThrow( () -> new NaoEmcontradoException("Doação nao encontrada para o usuario indormado"));
-        return doacaoRepository.findByUsuario(usuario);
     }
 
     @Transactional

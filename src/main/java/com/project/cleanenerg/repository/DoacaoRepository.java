@@ -1,14 +1,20 @@
 package com.project.cleanenerg.repository;
 
+import com.project.cleanenerg.entities.Usuario;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 import com.project.cleanenerg.entities.Doacao;
 import com.project.cleanenerg.entities.Projeto;
-import com.project.cleanenerg.entities.Usuario;
-import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
 
 public interface DoacaoRepository extends JpaRepository<Doacao, Long> {
-    List<Doacao> findByProjeto(Projeto projeto);
 
-    List<Doacao> findByUsuario(Usuario usuario);
+    // Método que retorna uma página de doações por projeto
+    Page<Doacao> findByProjeto(Projeto projeto, Pageable pageable);
+
+    // Método que retorna uma página de doações por usuário
+    Page<Doacao> findByUsuario(Usuario usuario, Pageable pageable);
+
+    // Método que retorna uma página de todas as doações
+    Page<Doacao> findAll(Pageable pageable);
 }
